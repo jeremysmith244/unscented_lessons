@@ -103,7 +103,16 @@ void UKF::UpdateState(VectorXd* x_out, MatrixXd* P_out) {
   Tc.fill(0.0);
 
   for (int i=0;i<2*n_aug+1;++i) {
-      Tc += weights(i)*(Xsig_pred.col(i) - x)*(Zsig.col(i) - z_pred).transpose();
+      VectorXd x_diff = (Xsig_pred.col(i) - x);
+      VectorXd z_diff = (Zsig.col(i) - z_pred);
+
+      // angle normalization
+      while (x_diff(3)> M_PI) x_diff(3)-=2.*M_PI;
+      while (x_diff(3)<-M_PI) x_diff(3)+=2.*M_PI;
+      while (z_diff(1)> M_PI) z_diff(1)-=2.*M_PI;
+      while (z_diff(1)<-M_PI) z_diff(1)+=2.*M_PI;
+
+      Tc += weights(i)*x_diff*z_diff.transpose();
   }
 
   MatrixXd K = Tc*S.inverse();
