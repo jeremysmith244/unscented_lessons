@@ -51,12 +51,14 @@ void UKF::PredictMeanAndCovariance(VectorXd* x_out, MatrixXd* P_out) {
 
   // create vector for predicted state
   VectorXd x = VectorXd(n_x);
+  x.fill(0.0);
   for (int i=0;i<2*n_aug+1;i++) {
     x += weights(i)*Xsig_pred.col(i);
   }
 
   // create covariance matrix for prediction
   MatrixXd P = MatrixXd(n_x, n_x);
+  P.fill(0.0);
   for (int i=0;i<2*n_aug+1;i++) {
     P += weights(i)*(Xsig_pred.col(i) - x)*(Xsig_pred.col(i) - x).transpose();
   }
